@@ -1,0 +1,29 @@
+USE [DataWarehouse]
+GO
+
+/****** Object:  View [gold].[dim_products]    Script Date: 09-06-2026 00:31:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [gold].[dim_products] as
+SELECT row_number() over(order by[prd_start_dt], [prd_id] ) as prd_key,
+        [prd_id] product_id
+      ,[cat_id] cat_num
+      ,[prd_key] product_num
+      ,[prd_nm] product_name
+      ,[prd_cost] product_cost
+      ,[prd_line] product_line
+      ,[prd_start_dt] start_date_, 
+      pc.cat as category,
+      pc.subcat as subcat,
+      pc.maintenance as mainteinance
+  FROM [DataWarehouse].[silver].[crm_prd_info] pn
+  left join silver.erp_px_cat_g1v2 pc
+  on pn.cat_id = pc.id
+  where prd_end_dt is null
+GO
+
+
