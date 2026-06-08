@@ -1,0 +1,35 @@
+USE [DataWarehouse]
+GO
+
+/****** Object:  View [gold].[dim_customers]    Script Date: 09-06-2026 00:30:33 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [gold].[dim_customers] as
+select 
+row_number() over(order by cst_id) as cust_key,
+cst_id cust_id,
+cst_key cust_number,
+cst_firstname firstname,
+cst_lastname lastname,
+cst_marital_status marital_status,
+case
+	when cst_gndr != 'N/A' then cst_gndr
+	else coalesce(gen,'N/A')
+	end gender,
+cst_create_date create_date,
+bdate birth_date,
+cntry country
+from silver.crm_cust_info
+left join silver.erp_cust_az12
+on cst_key = cid
+left join silver.erp_loc_a101 as loc
+on cst_key = loc.cid
+
+
+GO
+
+
